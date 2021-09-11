@@ -13,10 +13,11 @@ struct ContentView: View {
         [GridItem(.adaptive(minimum: 150))]
     }
     
-    @State var selectionMode = false
+    @State var multiSelectionMode = false
     
     @Environment(\.colorScheme) var colorScheme
-    @State var cards: [Card] = [] 
+    @State var cards: [Card] = []
+    @State var selectedCard: Card? = nil
     @State var selection: [Bool] = []
     var selected: Int {
         selection.filter {
@@ -24,13 +25,16 @@ struct ContentView: View {
         }
         .count
     }
+    var selectedIndex: Int? {
+        selection.firstIndex(of: true)
+    }
     
     var body: some View {
         NavigationView {
             
             Text("Sidebar")
             
-            VStack(spacing: 0) {
+            HStack(alignment: .top, spacing: 0) {
                 
                 
                 
@@ -40,9 +44,15 @@ struct ContentView: View {
                     LazyVGrid(columns: items, spacing: 20) {
                         ForEach(cards) {card in
                             
-                            CardView(sideA: card.sideA, sideB: card.sideB, selected: $selection[cards.firstIndex(of: card) ?? 0])
+                            CardView(card: card, selected: $selection[cards.firstIndex(of: card)!])
                                 .onTapGesture {
-                                    if (selectionMode) {selection[cards.firstIndex(of: card) ?? 0].toggle()}
+
+                                        // single selection mode
+                                        var currentSelection = selection[cards.firstIndex(of: card) ?? 0]
+                                        currentSelection.toggle()
+                                        selection = selection.map {_ in false}
+                                        selection[cards.firstIndex(of: card) ?? 0] = currentSelection
+                                    
                                 }
                         }
                         
@@ -62,26 +72,99 @@ struct ContentView: View {
                     .padding([.horizontal])
                     Spacer(minLength: 20)
                 }
-                .onChange(of: selectionMode) { _ in
+                .frame(maxWidth: .infinity)
+                .background(Color.green)
+                .onChange(of: multiSelectionMode) { _ in
 
                     selection = selection.map {_ in
                         false
                     }
                 }
                 
-                HStack {
-                    Text(selectionMode ? "Selecting" : "Viewing")
-                    Spacer()
-                }
-                .padding()
+                
+                VStack(alignment: .center, spacing: 20) {
+                        HStack(alignment: .top) {
+                            Text("Properties").font(Font.system(.title, design: .rounded)).bold().foregroundColor(.gray)
+                            Spacer()
+                        }
+                        
+                        if let index = selectedIndex {
+                            VStack(alignment: .center) {
+                                Text(cards[index].sideA)
+                                .font(Font.system(size: 20, weight: .semibold, design: .rounded))
+                                Divider()
+                                Text(cards[index].sideB)
+                                .font(Font.system(size: 20, weight: .semibold, design: .rounded))
+
+                            }
+                                .foregroundColor(.primary)
+                                .padding()
+                                .frame(width: 250, height: 250)
+                            .background(colorScheme == .dark ? Color.black.opacity(0.8) : Color.white.opacity(0.8))
+                                
+                                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+
+                                .shadow(color: Color.gray.opacity(0.1), radius: 5, x: 0, y: 10)
+                                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.orange, lineWidth: 3))
+                            
+                            HStack {
+                                Text("Side A").font(.system(.body, design: .rounded))
+                                Spacer()
+                                TextField("Side A", text: .constant(cards[index].sideA))
+                            }
+                            
+                            HStack {
+                                Text("Side B").font(.system(.body, design: .rounded))
+                                Spacer()
+                                TextField("Side B", text: .constant(cards[index].sideB))
+                            }
+                            
+                            
+                                HStack {
+                                    Text("Color").font(.system(.body, design: .rounded))
+                                    Spacer()
+                                    Circle().fill(Color.red).frame(width: 20, height: 20)
+                                    Circle().fill(Color.orange).frame(width: 20, height: 20).overlay(Circle().stroke(Color.primary, lineWidth: 2))
+                                    Circle().fill(Color.yellow).frame(width: 20, height: 20)
+                                    Circle().fill(Color.green).frame(width: 20, height: 20)
+                                    Circle().fill(Color.blue).frame(width: 20, height: 20)
+                                    Circle().fill(Color.purple).frame(width: 20, height: 20)
+                                    Circle().fill(Color.pink).frame(width: 20, height: 20)
+                                    Spacer()
+                                }
+                            
+                            HStack {
+                                Text("Stats").font(Font.system(.title, design: .rounded)).foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            
+                                
+                                
+                            Spacer()
+                        } else {
+                            HStack {
+                            Text("No cards selected.")
+                            Spacer()
+                            }
+                        }
+                        
+                       
+                        Spacer()
+                    }
+                    .padding()
+                    .frame(maxWidth: 300)
+                    
+                
+                
+                
             }
             .navigationTitle("Words")
             .navigationSubtitle("Words to Learn")
                     .toolbar {
 
                         ToolbarItem(placement: .automatic) {
-                            Button(selectionMode ? "Selected (\(selected))" : "Select") {
-                                selectionMode.toggle()
+                            Button(multiSelectionMode ? "Selected (\(selected))" : "Select") {
+                                multiSelectionMode.toggle()
                             }
                         }
                     }
@@ -99,16 +182,15 @@ struct ContentView_Previews: PreviewProvider {
 
 struct CardView: View {
     @Environment(\.colorScheme) var colorScheme
-    var sideA: String
-    var sideB: String
+    var card: Card
     @Binding var selected: Bool
     
     var body: some View {
         VStack(alignment: .center) {
-        Text(sideA)
+            Text(card.sideA)
             .font(Font.system(size: 20, weight: .semibold, design: .rounded))
             Divider()
-        Text(sideB)
+            Text(card.sideB)
             .font(Font.system(size: 20, weight: .semibold, design: .rounded))
 
         }
