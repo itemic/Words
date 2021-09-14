@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct ContentView: View {
     
     var items: [GridItem] {
@@ -46,12 +47,12 @@ struct ContentView: View {
                             
                             CardView(card: card, selected: $selection[cards.firstIndex(of: card)!])
                                 .onTapGesture {
-
-                                        // single selection mode
-                                        var currentSelection = selection[cards.firstIndex(of: card) ?? 0]
-                                        currentSelection.toggle()
-                                        selection = selection.map {_ in false}
-                                        selection[cards.firstIndex(of: card) ?? 0] = currentSelection
+                                    
+                                    // single selection mode
+                                    var currentSelection = selection[cards.firstIndex(of: card) ?? 0]
+                                    currentSelection.toggle()
+                                    selection = selection.map {_ in false}
+                                    selection[cards.firstIndex(of: card) ?? 0] = currentSelection
                                     
                                 }
                         }
@@ -66,16 +67,16 @@ struct ContentView: View {
                             .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.gray.opacity(0.3), lineWidth: 3))
                             .onTapGesture {
                                 cards.append(Card(sideA: "entropy", sideB: "エントロピ"))
-                                             selection.append(false)
+                                selection.append(false)
                             }
                     }
                     .padding([.horizontal])
                     Spacer(minLength: 20)
                 }
                 .frame(maxWidth: .infinity)
-                .background(Color.green)
+                .background(Color(NSColor.underPageBackgroundColor))
                 .onChange(of: multiSelectionMode) { _ in
-
+                    
                     selection = selection.map {_ in
                         false
                     }
@@ -83,91 +84,98 @@ struct ContentView: View {
                 
                 
                 VStack(alignment: .center, spacing: 20) {
+                    
+                    if let index = selectedIndex {
                         HStack(alignment: .top) {
                             Text("Properties").font(Font.system(.title, design: .rounded)).bold().foregroundColor(.gray)
                             Spacer()
                         }
                         
-                        if let index = selectedIndex {
-                            VStack(alignment: .center) {
-                                Text(cards[index].sideA)
+                        VStack(alignment: .center) {
+                            Text(cards[index].sideA)
                                 .font(Font.system(size: 20, weight: .semibold, design: .rounded))
-                                Divider()
-                                Text(cards[index].sideB)
+                            Divider()
+                            Text(cards[index].sideB)
                                 .font(Font.system(size: 20, weight: .semibold, design: .rounded))
-
-                            }
-                                .foregroundColor(.primary)
-                                .padding()
-                                .frame(width: 250, height: 250)
-                            .background(colorScheme == .dark ? Color.black.opacity(0.8) : Color.white.opacity(0.8))
-                                
-                                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-
-                                .shadow(color: Color.gray.opacity(0.1), radius: 5, x: 0, y: 10)
-                                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.orange, lineWidth: 3))
                             
-                            HStack {
-                                Text("Side A").font(.system(.body, design: .rounded))
-                                Spacer()
-                                TextField("Side A", text: .constant(cards[index].sideA))
-                            }
-                            
-                            HStack {
-                                Text("Side B").font(.system(.body, design: .rounded))
-                                Spacer()
-                                TextField("Side B", text: .constant(cards[index].sideB))
-                            }
-                            
-                            
-                                HStack {
-                                    Text("Color").font(.system(.body, design: .rounded))
-                                    Spacer()
-                                    Circle().fill(Color.red).frame(width: 20, height: 20)
-                                    Circle().fill(Color.orange).frame(width: 20, height: 20).overlay(Circle().stroke(Color.primary, lineWidth: 2))
-                                    Circle().fill(Color.yellow).frame(width: 20, height: 20)
-                                    Circle().fill(Color.green).frame(width: 20, height: 20)
-                                    Circle().fill(Color.blue).frame(width: 20, height: 20)
-                                    Circle().fill(Color.purple).frame(width: 20, height: 20)
-                                    Circle().fill(Color.pink).frame(width: 20, height: 20)
-                                    Spacer()
-                                }
-                            
-                            HStack {
-                                Text("Stats").font(Font.system(.title, design: .rounded)).foregroundColor(.secondary)
-                                Spacer()
-                            }
-                            
-                                
-                                
+                        }
+                        .foregroundColor(.primary)
+                        .padding()
+                        .frame(width: 250, height: 250)
+                        .background(colorScheme == .dark ? Color.black.opacity(0.8) : Color.white.opacity(0.8))
+                        
+                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                        
+                        .shadow(color: Color.gray.opacity(0.1), radius: 5, x: 0, y: 10)
+                        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.orange, lineWidth: 3))
+                        
+                        HStack {
+                            Text("Side A").font(.system(.body, design: .rounded))
                             Spacer()
-                        } else {
-                            HStack {
-                            Text("No cards selected.")
-                            Spacer()
-                            }
+                            TextField("Side A", text: .constant(cards[index].sideA))
                         }
                         
-                       
+                        HStack {
+                            Text("Side B").font(.system(.body, design: .rounded))
+                            Spacer()
+                            TextField("Side B", text: .constant(cards[index].sideB))
+                        }
+                        
+                        
+                        HStack {
+                            Text("Color").font(.system(.body, design: .rounded))
+                            Spacer()
+                            Circle().fill(Color.red).frame(width: 20, height: 20)
+                            Circle().fill(Color.orange).frame(width: 20, height: 20).overlay(Circle().stroke(Color.primary, lineWidth: 2))
+                            Circle().fill(Color.yellow).frame(width: 20, height: 20)
+                            Circle().fill(Color.green).frame(width: 20, height: 20)
+                            Circle().fill(Color.blue).frame(width: 20, height: 20)
+                            Circle().fill(Color.purple).frame(width: 20, height: 20)
+                            Circle().fill(Color.pink).frame(width: 20, height: 20)
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            Text("Stats").font(Font.system(.title, design: .rounded)).foregroundColor(.secondary)
+                            Spacer()
+                        }
+                        
+                        
+                        
                         Spacer()
+                    } else {
+                        VStack(spacing: 10) {
+                            Spacer()
+                            Image(systemName: "square.dashed")
+                                .font(Font.system(size: 48))
+                                .foregroundColor(.gray)
+                                
+                            Text("No Card Selected").font(Font.system(.title2, design: .rounded).bold())
+                                .foregroundColor(.gray)
+                            Spacer()
+                        }
                     }
-                    .padding()
-                    .frame(maxWidth: 300)
                     
+                    
+                    Spacer()
+                }
+                .padding()
+                .frame(maxWidth: 300)
+                
                 
                 
                 
             }
             .navigationTitle("Words")
             .navigationSubtitle("Words to Learn")
-                    .toolbar {
-
-                        ToolbarItem(placement: .automatic) {
-                            Button(multiSelectionMode ? "Selected (\(selected))" : "Select") {
-                                multiSelectionMode.toggle()
-                            }
-                        }
+            .toolbar {
+                
+                ToolbarItem(placement: .automatic) {
+                    Button(multiSelectionMode ? "Selected (\(selected))" : "Select") {
+                        multiSelectionMode.toggle()
                     }
+                }
+            }
         }
         
     }
@@ -188,22 +196,22 @@ struct CardView: View {
     var body: some View {
         VStack(alignment: .center) {
             Text(card.sideA)
-            .font(Font.system(size: 20, weight: .semibold, design: .rounded))
+                .font(Font.system(size: 20, weight: .semibold, design: .rounded))
             Divider()
             Text(card.sideB)
-            .font(Font.system(size: 20, weight: .semibold, design: .rounded))
-
-        }
-            .foregroundColor(.primary)
-            .padding()
-            .frame(width: 140, height: 140)
-            .background(selected ? Color.blue.opacity(0.2) : Color.orange.opacity(0.1))
-        .background(colorScheme == .dark ? Color.black.opacity(0.8) : Color.white.opacity(0.8))
+                .font(Font.system(size: 20, weight: .semibold, design: .rounded))
             
-            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-
-            .shadow(color: Color.gray.opacity(0.1), radius: 5, x: 0, y: 10)
-            .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(selected ? Color.blue : Color.orange, lineWidth: 3))
+        }
+        .foregroundColor(.primary)
+        .padding()
+        .frame(width: 140, height: 140)
+        .background(selected ? Color.blue.opacity(0.2) : Color.orange.opacity(0.1))
+        .background(colorScheme == .dark ? Color.black.opacity(0.8) : Color.white.opacity(0.8))
+        
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        
+        .shadow(color: Color.gray.opacity(0.1), radius: 5, x: 0, y: 10)
+        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(selected ? Color.blue : Color.orange, lineWidth: 3))
     }
 }
 
